@@ -1,0 +1,58 @@
+Assunto: [Coordenação de Incidente] {{.Category}} — {{.Domain}} / ASN {{.ASN}}
+
+Prezados,
+
+Estamos coordenando takedown do domínio {{.Domain}} ({{.IP}}, ASN {{.ASN}}) com indícios de {{.Category}}.
+Solicitamos apoio na coordenação com a rede de origem caso necessário.
+
+DADOS DO INCIDENTE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• Case ID: {{.CaseID}}
+• Evidence ID: {{.EvidenceID}}
+• Domínio: {{.Domain}}
+• Endereço IP: {{.IP}}
+• ASN: {{.ASN}} ({{.ASNName}})
+• Categoria: {{.Category}}
+• Risk Score: {{.RiskScore}}/100
+• Primeiro visto (UTC): {{.FirstSeen}}
+• País: {{.Country}}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EVIDÊNCIAS COLETADAS:
+• URLs (defanged): {{.DefangedURLs}}
+• Análise técnica: {{.Rationale}}
+• Status HTTP: {{.HTTPStatus}}
+• Certificado TLS: {{.TLSInfo}}
+• Timestamp da coleta: {{.CollectionTime}}
+
+AÇÕES TOMADAS:
+• ✓ Notificação ao provedor de hosting: {{.ProviderName}}
+• ✓ Contato com registrar: {{.RegistrarName}}
+• ✓ Submissão a blocklists relevantes
+{{.AdditionalActions}}
+
+COORDENAÇÃO SOLICITADA:
+{{.CoordinationRequest}}
+
+IMPACTO ESTIMADO:
+{{.Impact}}
+
+CLASSIFICAÇÃO:
+{{.Classification}}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Contato técnico para coordenação:
+{{.ContactName}}
+{{.ContactEmail}}
+{{.ContactPhone}}
+
+Disponibilidade: 24/7 para casos críticos
+WhatsApp/Telegram: {{.EmergencyContact}}
+
+Atenciosamente,
+{{.OrganizationName}}
+CTI Security Team
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Este incidente está sendo tratado conforme protocolos de resposta coordenada.
+Para atualizações em tempo real: {{.StatusPageURL}}

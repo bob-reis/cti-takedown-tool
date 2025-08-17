@@ -1,0 +1,54 @@
+Subject: [Abuse] {{.Category}} content hosted on your network — {{.IP}} / ASN {{.ASN}}
+
+Hello Abuse Team,
+
+We detected {{.Category}} content being served from {{.IP}} (ASN {{.ASN}}) associated with domain {{.Domain}}.
+Please REMOVE the content and notify the customer immediately.
+
+CASE DETAILS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• Case ID: {{.CaseID}}
+• Evidence ID: {{.EvidenceID}}
+• Provider: {{.ProviderName}}
+• IP Address: {{.IP}}
+• ASN: {{.ASN}} ({{.ASNName}})
+• Domain: {{.Domain}}
+• Category: {{.Category}}
+• Risk Score: {{.RiskScore}}/100
+• First seen (UTC): {{.FirstSeen}}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TECHNICAL EVIDENCE:
+• URLs (defanged): {{.DefangedURLs}}
+• HTTP Response: {{.HTTPStatus}} {{.HTTPHeaders}}
+• Content Analysis: {{.Rationale}}
+• Screenshots: {{.ScreenshotLinks}}
+• Collection timestamp: {{.CollectionTime}}
+
+REQUESTED ACTION:
+{{.RequestedAction}}
+
+IMPACT:
+{{.Impact}}
+
+AUP VIOLATION:
+This content violates your Acceptable Use Policy regarding:
+{{.AUPViolations}}
+
+TIMELINE:
+Please acknowledge receipt and provide a ticket ID within 24 hours.
+Content removal requested within 48 hours per industry standards.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Technical contact for clarification:
+{{.ContactName}}
+{{.ContactEmail}}
+{{.ContactPhone}}
+
+Regards,
+{{.OrganizationName}}
+CTI Security Team
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+This report is sent in compliance with industry best practices for abuse reporting.
+For questions about this report: {{.ContactEmail}}

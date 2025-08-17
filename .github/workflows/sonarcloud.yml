@@ -1,0 +1,59 @@
+name: SonarCloud Analysis
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+env:
+  GO_VERSION: "1.22"
+
+jobs:
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    environment: sonarcloud
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+    
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: ${{ env.GO_VERSION }}
+    
+    - name: Download dependencies
+      run: |
+        go mod download
+        go mod verify
+    
+    - name: Run tests with coverage
+      run: |
+        go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+    
+    - name: Verify coverage file
+      run: |
+        if [ ! -f coverage.out ]; then
+          echo "❌ Coverage file not found"
+          exit 1
+        fi
+        
+        if [ ! -s coverage.out ]; then
+          echo "❌ Coverage file is empty"
+          exit 1
+        fi
+        
+        echo "✅ Coverage file generated successfully"
+        echo "Coverage file size: $(wc -l < coverage.out) lines"
+    
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarqube-scan-action@v5
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

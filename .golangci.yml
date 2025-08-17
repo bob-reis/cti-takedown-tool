@@ -1,0 +1,221 @@
+version: 2
+
+# GolangCI-Lint Configuration for CTI Takedown Tool
+
+run:
+  # Timeout for analysis
+  timeout: 5m
+
+  # Exit code when at least one issue was found
+  issues-exit-code: 1
+
+  # Include test files or not
+  tests: true
+
+# Output configuration
+output:
+  format: colored-line-number
+  # Print lines of code with issue
+  print-issued-lines: true
+  # Print linter name in the end of issue text
+  print-linter-name: true
+  # Sort results by: filepath, line and column
+  sort-results: true
+
+# Linters configuration
+linters-settings:
+  # Errcheck configuration
+  errcheck:
+    # Report about not checking of errors in type assertions
+    check-type-assertions: true
+
+    # Report about assignment of errors to blank identifier
+    check-blank: false
+
+    # Exclude these functions
+    exclude-functions: fmt:.*,io/ioutil:^Read.*
+
+  # Gocyclo configuration
+  gocyclo:
+    # Minimal code complexity to report
+    min-complexity: 15
+
+  # Goimports configuration
+  goimports:
+    # Put imports beginning with prefix after 3rd-party packages
+    local-prefixes: github.com/cti-team/takedown
+
+  # Govet configuration
+  govet:
+    # Settings per analyzer
+    settings:
+      printf:
+        # Comma-separated list of print function names to check
+        funcs:
+          - (github.com/sirupsen/logrus.FieldLogger).Infof
+          - (github.com/sirupsen/logrus.FieldLogger).Warnf
+          - (github.com/sirupsen/logrus.FieldLogger).Errorf
+          - (github.com/sirupsen/logrus.FieldLogger).Fatalf
+
+  # Revive configuration (replacement for golint)
+  revive:
+    # Maximum number of open files at the same time
+    max-open-files: 2048
+    
+    # When set to false, ignores files with "GENERATED" header
+    ignore-generated-header: true
+    
+    # Sets the default severity
+    severity: warning
+    
+    # Enable all available rules
+    enable-all-rules: false
+    
+    # Sets the default failure confidence
+    confidence: 0.8
+    
+    rules:
+      # Enable specific rules
+      - name: blank-imports
+      - name: context-as-argument
+      - name: context-keys-type
+      - name: dot-imports
+      - name: error-return
+      - name: error-strings
+      - name: error-naming
+      - name: exported
+      - name: increment-decrement
+      - name: var-naming
+      - name: var-declaration
+      - name: package-comments
+      - name: range
+      - name: receiver-naming
+      - name: time-naming
+      - name: unexported-return
+      - name: indent-error-flow
+      - name: errorf
+      - name: empty-block
+      - name: superfluous-else
+      - name: unused-parameter
+      - name: unreachable-code
+      - name: redefines-builtin-id
+
+  # Lll configuration
+  lll:
+    # Max line length, lines longer will be reported
+    line-length: 120
+
+  # Misspell configuration
+  misspell:
+    # Correct spellings using locale preferences for US or UK
+    locale: US
+
+  # Nakedret configuration
+  nakedret:
+    # Make an issue if func has more lines of code than this setting
+    max-func-lines: 30
+
+  # Prealloc configuration
+  prealloc:
+    # Report preallocation suggestions only on simple loops
+    simple: true
+    range-loops: true
+    for-loops: false
+
+  # Unused configuration
+  unused:
+    # Select the Go version to target
+    go: "1.22"
+
+  # Whitespace configuration
+  whitespace:
+    multi-if: false   # Enforces newlines (or comments) after every multi-line if statement
+    multi-func: false # Enforces newlines (or comments) after every multi-line function signature
+
+# Linters to enable/disable
+linters:
+  enable:
+    - errcheck
+    - govet
+    - gosec
+    - forbidigo
+  disable:
+    - godox
+    - paralleltest
+    - wsl
+    - staticcheck
+    - revive
+
+# Issues configuration
+issues:
+  exclude-dirs:
+    - vendor
+    - testdata
+    - scripts
+    - docs
+  exclude-files:
+    - ".*\\.pb\\.go$"
+    - ".*_mock\\.go$"
+  uniq-by-line: true
+  # List of regexps of issue texts to exclude
+  exclude:
+    # Exclude some lints that are not relevant for our codebase
+    - "Error return value of .((os\\.)?std(out|err)\\..*|.*Close|.*Flush|os\\.Remove(All)?|.*printf?|os\\.(Un)?Setenv). is not checked"
+    - "should have a package comment, unless it's in another file for this package"
+    - "error strings should not be capitalized or end with punctuation or a newline"
+  
+  # Excluding configuration per-path, per-linter, per-text and per-source
+  exclude-rules:
+    # Exclude some linters from running on tests files
+    - path: _test\.go
+      linters:
+        - funlen         # Long functions are OK in tests
+        - gocyclo        # Complex functions are OK in tests
+        - gocognit       # Complex functions are OK in tests
+        - cyclop         # Complex functions are OK in tests
+        - dupl           # Duplicate code is OK in tests
+        - lll            # Long lines are OK in tests
+        - goconst        # Repeated strings are OK in tests
+        - gochecknoglobals # Global variables are OK in tests
+        - noctx          # Context not required in tests
+    
+    # Exclude some linters from running on main.go files
+    - path: cmd/.*main\.go
+      linters:
+        - gochecknoinits # init functions are OK in main
+        - gocyclo        # Main functions can be complex
+        - funlen         # Main functions can be long
+    
+    # Exclude some linters from running on generated files
+    - path: ".*\\.pb\\.go"
+      linters:
+        - lll
+        - gochecknoglobals
+        - gochecknoinits
+    
+    # Exclude some specific issues
+    - text: "shadow: declaration of \"err\" shadows declaration"
+      linters:
+        - govet
+    
+    - text: "should not use dot imports"
+      linters:
+        - revive
+      path: _test\.go
+  
+  # Fix found issues (if it's supported by the linter)
+  fix: false
+  
+  # Maximum issues count per one linter
+  max-issues-per-linter: 0
+  
+  # Maximum count of issues with the same text
+  max-same-issues: 0
+  
+  # Show only new issues: if there are unstaged changes or untracked files
+  new: false
+  
+  # Show only new issues created after git revision
+  # new-from-rev: origin/main
+
+# Severity configuration

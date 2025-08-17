@@ -1,0 +1,62 @@
+# SLA Configuration for different target types
+# Based on CTI Takedown Specification Section 2
+
+registrar:
+  first_response_hours: 48    # 48 hours for first response
+  escalate_after_hours: 120   # 5 days to escalate to ICANN/legal
+  retry_interval_hours: 48    # Follow up every 48 hours
+  max_retries: 3
+
+hosting:
+  first_response_hours: 48    # 48 hours for hosting providers
+  escalate_after_hours: 96    # 4 days to escalate
+  retry_interval_hours: 24    # Follow up every 24 hours
+  max_retries: 4
+
+cdn:
+  first_response_hours: 24    # CDNs usually respond faster
+  escalate_after_hours: 72    # 3 days to escalate
+  retry_interval_hours: 24    # Follow up every 24 hours
+  max_retries: 3
+
+search_warnings:
+  first_response_hours: 24    # Search engines process warnings quickly
+  escalate_after_hours: 72    # 3 days
+  retry_interval_hours: 24    # Retry every 24 hours
+  max_retries: 5
+
+blocklists:
+  first_response_hours: 24    # Blocklists are usually automated
+  escalate_after_hours: 72    # 3 days
+  retry_interval_hours: 24    # Retry every 24 hours
+  max_retries: 3
+
+# Special SLAs for high priority cases
+high_priority:
+  registrar:
+    first_response_hours: 24
+    escalate_after_hours: 72
+    retry_interval_hours: 24
+  hosting:
+    first_response_hours: 12
+    escalate_after_hours: 48
+    retry_interval_hours: 12
+  cdn:
+    first_response_hours: 12
+    escalate_after_hours: 36
+    retry_interval_hours: 12
+
+# Critical cases (C2, active attacks)
+critical:
+  registrar:
+    first_response_hours: 12
+    escalate_after_hours: 36
+    retry_interval_hours: 12
+  hosting:
+    first_response_hours: 6
+    escalate_after_hours: 24
+    retry_interval_hours: 6
+  cdn:
+    first_response_hours: 6
+    escalate_after_hours: 18
+    retry_interval_hours: 6

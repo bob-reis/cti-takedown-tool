@@ -1,0 +1,51 @@
+Assunto: [Urgente] Solicitação de suspensão de domínio por {{.Category}} — {{.Domain}}
+
+Prezados,
+
+Identificamos atividade de {{.Category}} no domínio {{.Domain}}, registrado através de {{.Registrar}}.
+Solicitamos SUSPENSÃO IMEDIATA conforme violação de Terms of Service e DNS Abuse Policy.
+
+DADOS DO CASO:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• Case ID: {{.CaseID}}
+• Evidence ID: {{.EvidenceID}}
+• Domínio (defanged): {{.DefangedDomain}}
+• Categoria: {{.Category}}
+• Risk Score: {{.RiskScore}}/100
+• Primeiro visto (UTC): {{.FirstSeen}}
+• Análise: {{.Rationale}}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EVIDÊNCIAS TÉCNICAS:
+• URLs afetadas: {{.DefangedURLs}}
+• DNS Records: {{.DNSInfo}}
+• HTTP Status: {{.HTTPStatus}}
+• TLS Certificate: {{.TLSInfo}}
+• Timestamp da coleta: {{.CollectionTime}}
+
+AÇÃO SOLICITADA:
+{{.RequestedAction}}
+
+IMPACTO:
+{{.Impact}}
+
+URGÊNCIA:
+Este domínio está causando danos ativos. Solicitamos ação imediata para proteger usuários finais.
+
+SEGUIMENTO:
+Favor confirmar recebimento e fornecer número de caso/ticket para acompanhamento.
+Caso não haja resposta em 48 horas, escalaremos conforme políticas ICANN.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Contato técnico para esclarecimentos:
+{{.ContactName}}
+{{.ContactEmail}}
+{{.ContactPhone}}
+
+Atenciosamente,
+{{.OrganizationName}}
+CTI Security Team
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Este email foi enviado em conformidade com as políticas de DNS Abuse e Terms of Service.
+Para questões sobre este reporte: {{.ContactEmail}}

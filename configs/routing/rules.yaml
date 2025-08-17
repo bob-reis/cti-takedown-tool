@@ -1,0 +1,170 @@
+# Routing Rules Configuration
+# Based on CTI Takedown Specification Section 10
+
+rules:
+  # Phishing campaigns - multi-target approach
+  - name: "phishing_campaign"
+    match:
+      tags: ["phishing"]
+    actions:
+      - target_type: "registrar"
+        action: "suspend_domain"
+        priority: 1
+        parallel: false
+      - target_type: "hosting"
+        action: "remove_content"
+        priority: 2
+        parallel: true
+      - target_type: "search"
+        action: "warning_list"
+        priority: 3
+        parallel: true
+      - target_type: "blocklist"
+        action: "blocklist"
+        priority: 4
+        parallel: true
+
+  # Brand protection (typosquatting)
+  - name: "brand_protection"
+    match:
+      tags: ["brand:*"]
+    actions:
+      - target_type: "registrar"
+        action: "suspend_domain"
+        priority: 1
+        parallel: false
+        # Special handling for .br domains -> SACI-Adm
+        conditions:
+          domain_tld: [".br"]
+          escalate_to: "saci_adm"
+
+  # Malware distribution
+  - name: "malware_distribution"
+    match:
+      tags: ["malware"]
+    actions:
+      - target_type: "hosting"
+        action: "remove_content"
+        priority: 1
+        parallel: false
+      - target_type: "blocklist"
+        action: "blocklist"
+        priority: 2
+        parallel: true
+      - target_type: "registrar"
+        action: "suspend_domain"
+        priority: 3
+        parallel: false
+        conditions:
+          if_hosting_fails: true
+
+  # C2 Infrastructure - high priority, fast action
+  - name: "c2_infrastructure"
+    match:
+      tags: ["c2"]
+    actions:
+      - target_type: "hosting"
+        action: "remove_content"
+        priority: 1
+        parallel: false
+        sla_override: "critical"
+      - target_type: "registrar"
+        action: "suspend_domain"
+        priority: 2
+        parallel: true
+        sla_override: "critical"
+      - target_type: "cert"
+        action: "coordinate"
+        priority: 3
+        parallel: true
+        conditions:
+          country: ["br", "us", "eu"]
+
+  # High-value targets (banks, government)
+  - name: "high_value_targets"
+    match:
+      tags: ["brand:*bank*", "brand:*gov*", "brand:*mil*"]
+    actions:
+      - target_type: "registrar"
+        action: "suspend_domain"
+        priority: 1
+        parallel: false
+        sla_override: "high_priority"
+      - target_type: "hosting"
+        action: "remove_content"
+        priority: 1
+        parallel: true
+        sla_override: "high_priority"
+      - target_type: "search"
+        action: "warning_list"
+        priority: 2
+        parallel: true
+
+  # Mass campaigns - focus on infrastructure
+  - name: "mass_campaign"
+    match:
+      tags: ["mass", "campaign"]
+    actions:
+      - target_type: "hosting"
+        action: "remove_content"
+        priority: 1
+        parallel: false
+      - target_type: "cdn"
+        action: "remove_content"
+        priority: 1
+        parallel: true
+      - target_type: "blocklist"
+        action: "blocklist"
+        priority: 2
+        parallel: true
+
+# Fallback rule - if no specific rule matches
+default_rule:
+  actions:
+    - target_type: "hosting"
+      action: "remove_content"
+      priority: 1
+    - target_type: "registrar"
+      action: "suspend_domain"
+      priority: 2
+
+# Special handling for different TLDs
+tld_specific:
+  ".br":
+    # Brazilian domains - special handling
+    brand_disputes: "saci_adm"
+    content_abuse: "hosting_then_cert"
+    registrar_contact: "registro.br"
+  
+  ".com":
+    # .com domains - standard ICANN process
+    escalation: "icann_compliance"
+    primary_registrars: ["godaddy", "namecheap", "enom"]
+  
+  ".org":
+    # .org domains - PIR process
+    escalation: "pir_support"
+    
+  ".gov":
+    # Government domains - special handling
+    priority: "critical"
+    escalation: "government_cert"
+
+# Target prioritization based on effectiveness
+effectiveness_ranking:
+  phishing:
+    - "hosting"      # Fastest to remove content
+    - "cdn"          # Can block quickly
+    - "registrar"    # More permanent but slower
+    - "search"       # Warning users
+    - "blocklist"    # Network-level blocking
+  
+  malware:
+    - "hosting"      # Remove payload
+    - "registrar"    # Domain suspension
+    - "blocklist"    # Network blocking
+  
+  c2:
+    - "hosting"      # Infrastructure takedown
+    - "registrar"    # Domain suspension
+    - "cert"         # National coordination
