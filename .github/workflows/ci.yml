@@ -136,7 +136,7 @@ jobs:
     
     - name: Run Nancy to check for vulnerabilities
       run: |
-        go install github.com/sonatypecommunity/nancy@latest
+        go install github.com/sonatype-nexus-community/nancy/v2@latest
         go list -json -deps ./... | nancy sleuth
     
     - name: Check for hardcoded secrets
