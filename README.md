@@ -4,6 +4,8 @@
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Tests](https://img.shields.io/badge/Tests-67%20passing-brightgreen.svg)](#testing)
 [![Coverage](https://img.shields.io/badge/Coverage-85%2B%25-brightgreen.svg)](#testing)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bob-reis_site-takedown&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=bob-reis_site-takedown)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=bob-reis_site-takedown&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=bob-reis_site-takedown)
 
 **Ferramenta automatizada para orquestração de takedowns de domínios/URLs maliciosos**
 
@@ -45,8 +47,8 @@ graph TD
 
 ```bash
 # Clone o repositório
-git clone https://github.com/cti-team/takedown.git
-cd takedown
+git clone https://github.com/bob-reis/cti-takedown-tool.git
+cd cti-takedown-tool
 
 # Build
 go build -o takedown cmd/takedown/main.go
@@ -282,10 +284,8 @@ Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](LICEN
 
 ## 🆘 **Suporte**
 
- - 📖 **Documentação**: [docs](docs/README.md)
-- 🐛 **Issues**: [GitHub Issues](https://github.com/cti-team/takedown/issues)
-- 💬 **Discussões**: [GitHub Discussions](https://github.com/cti-team/takedown/discussions)
-- 📧 **Email**: security-team@company.com
+- 🐛 **Issues**: [GitHub Issues](https://github.com/bob-reis/cti-takedown-tool/issues)
+- 📧 **Email**: bobreis@yeslinux.com.br
 
 ## 🗺️ **Roadmap**
 
@@ -293,16 +293,7 @@ Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](LICEN
 - [ ] API REST completa
 - [ ] Dashboard web para monitoramento
 - [ ] Integração com MISP/OpenCTI
-- [ ] Métricas avançadas com Prometheus
-
-### v1.2 (Futuro)
-- [ ] Machine Learning para scoring automático
-- [ ] Integração com mais threat intelligence feeds
-- [ ] Automação completa para casos simples
-- [ ] Mobile app para aprovações
 
 ---
-
-**Desenvolvido pela CTI Security Team** 🛡️
 
 *Automatizando a defesa contra ameaças cibernéticas, um domínio por vez.*
