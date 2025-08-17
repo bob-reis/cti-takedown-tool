@@ -56,15 +56,15 @@ jobs:
     
     - name: Run staticcheck
       run: staticcheck ./...
-    
-      - name: Run golangci-lint
-        run: golangci-lint run ./...
 
-      - name: Run unit tests with coverage
-        run: |
-          go test -v -race ./...
-          go test -coverprofile=coverage.out -covermode=atomic $(go list ./... | grep -v /cmd/ | grep -v /internal/)
-          go tool cover -html=coverage.out -o coverage.html
+    - name: Run golangci-lint
+      run: golangci-lint run ./...
+
+    - name: Run unit tests with coverage
+      run: |
+        go test -v -race ./...
+        go test -coverprofile=coverage.out -covermode=atomic $(go list ./... | grep -v /cmd/ | grep -v /internal/)
+        go tool cover -html=coverage.out -o coverage.html
     
     - name: Check test coverage threshold
       run: |
