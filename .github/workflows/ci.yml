@@ -10,6 +10,10 @@ on:
       - main
       - develop
 
+permissions:
+  contents: read
+  security-events: write
+
 env:
   GO_VERSION: "1.22"
   SONAR_PROJECT_KEY: "cti-team_takedown"
