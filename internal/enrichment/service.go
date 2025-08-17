@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/cti-team/takedown/internal/contacts"
 	"github.com/cti-team/takedown/pkg/models"
 	"github.com/cti-team/takedown/pkg/rdap"
 )
@@ -76,7 +77,7 @@ func (s *Service) enrichHosting(ctx context.Context, domain string, contact *mod
 		ASN:  asn,
 		Name: asnName,
 		Abuse: models.ContactInfo{
-			Email: s.getASNAbuseEmail(asnName),
+			Email: contacts.GetASNAbuseEmail(asnName),
 		},
 	}
 
@@ -95,33 +96,7 @@ func (s *Service) detectCDN(ctx context.Context, domain string, contact *models.
 	cname = strings.ToLower(cname)
 
 	// Detectar CDNs baseado em CNAME patterns
-	cdnProviders := map[string]*models.CDNInfo{
-		"cloudflare": {
-			Name:    "Cloudflare",
-			Webform: "https://www.cloudflare.com/abuse/form",
-			Abuse: models.ContactInfo{
-				Email: "abuse@cloudflare.com",
-			},
-		},
-		"fastly": {
-			Name: "Fastly",
-			Abuse: models.ContactInfo{
-				Email: "abuse@fastly.com",
-			},
-		},
-		"akamai": {
-			Name: "Akamai",
-			Abuse: models.ContactInfo{
-				Email: "abuse@akamai.com",
-			},
-		},
-		"amazon": {
-			Name: "Amazon CloudFront",
-			Abuse: models.ContactInfo{
-				Email: "abuse@amazonaws.com",
-			},
-		},
-	}
+	cdnProviders := contacts.GetCDNProviders()
 
 	for pattern, cdnInfo := range cdnProviders {
 		if strings.Contains(cname, pattern) {
@@ -175,46 +150,3 @@ func (s *Service) lookupASN(ip string) (int, string, error) {
 	}
 }
 
-// getASNAbuseEmail retorna email de abuse para ASNs conhecidos
-func (s *Service) getASNAbuseEmail(asnName string) string {
-	asnName = strings.ToLower(asnName)
-
-	abuseEmails := map[string]string{
-		"google llc":            "network-abuse@google.com",
-		"cloudflare, inc.":      "abuse@cloudflare.com",
-		"amazon.com, inc.":      "abuse@amazonaws.com",
-		"microsoft corporation": "abuse@microsoft.com",
-		"digitalocean":          "abuse@digitalocean.com",
-		"ovh":                   "abuse@ovh.net",
-		"hetzner":               "abuse@hetzner.de",
-		"vultr":                 "abuse@vultr.com",
-		"linode":                "abuse@linode.com",
-	}
-
-	for provider, email := range abuseEmails {
-		if strings.Contains(asnName, provider) {
-			return email
-		}
-	}
-
-	// Fallback genérico
-	return "abuse@" + extractDomainFromName(asnName)
-}
-
-// extractDomainFromName extrai um possível domínio do nome do ASN
-func extractDomainFromName(name string) string {
-	name = strings.ToLower(name)
-	name = strings.ReplaceAll(name, " ", "")
-	name = strings.ReplaceAll(name, ",", "")
-	name = strings.ReplaceAll(name, "llc", "")
-	name = strings.ReplaceAll(name, "inc", "")
-	name = strings.ReplaceAll(name, "ltd", "")
-	name = strings.ReplaceAll(name, "corporation", "")
-	name = strings.TrimSpace(name)
-
-	if name == "" {
-		return "example.com"
-	}
-
-	return name + ".com"
-}

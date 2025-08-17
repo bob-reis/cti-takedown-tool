@@ -5,6 +5,7 @@
 [![Tests](https://img.shields.io/badge/Tests-67%20passing-brightgreen.svg)](#testing)
 [![Coverage](https://img.shields.io/badge/Coverage-85%2B%25-brightgreen.svg)](#testing)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bob-reis_site-takedown&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=bob-reis_site-takedown)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=bob-reis_site-takedown&metric=bugs)](https://sonarcloud.io/summary/new_code?id=bob-reis_site-takedown)
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=bob-reis_site-takedown&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=bob-reis_site-takedown)
 
 **Ferramenta automatizada para orquestração de takedowns de domínios/URLs maliciosos**
