@@ -393,6 +393,6 @@ rules:
 
 ---
 
-## 15) Minha Opinião (Resumo Prático)
+## 15) Resumo Prático
 
 Automatize **descoberta de contatos via RDAP**, padronize **Evidence Packs**, modele uma **máquina de SLA** (reenvio/escalação) e trate **privacy** como detalhe operacional (use **relay** por padrão, **reveal** só com base legal). Para .BR, foque em **hosting/ISP** para conteúdo e **SACI-Adm** para marca. Enquanto isso, use **warnings** e **blocklists** para reduzir o impacto.
