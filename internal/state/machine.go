@@ -320,27 +320,61 @@ func (m *Machine) checkPendingActions() {
 	defer m.mutex.RUnlock()
 
 	for _, request := range m.requests {
-		if request.NextActionAt != nil && now.After(*request.NextActionAt) {
-			if request.Status == models.StatusSubmitted {
-				// Promover para follow-up
-				if err := m.transitionTo(request, models.StatusFollowUp); err != nil {
-					request.AddEvent("transition_failed", "system", "",
-						fmt.Sprintf("failed to transition: %v", err))
-				}
-			} else if request.Status == models.StatusFollowUp {
-				// Verificar se deve escalar
-				if request.GetAge() > float64(request.SLA.EscalateAfterHours) {
-					request.AddEvent("escalation_needed", "system", "",
-						fmt.Sprintf("Case overdue by %.1f hours", request.GetAge()-float64(request.SLA.EscalateAfterHours)))
-				} else {
-					// Continuar follow-up
-					if err := m.transitionTo(request, models.StatusFollowUp); err != nil {
-						request.AddEvent("transition_failed", "system", "",
-							fmt.Sprintf("failed to transition: %v", err))
-					}
-				}
-			}
+		if m.shouldProcessRequest(request, now) {
+			m.processScheduledRequest(request)
 		}
+	}
+}
+
+// shouldProcessRequest verifica se um request deve ser processado agora
+func (m *Machine) shouldProcessRequest(request *models.TakedownRequest, now time.Time) bool {
+	return request.NextActionAt != nil && now.After(*request.NextActionAt)
+}
+
+// processScheduledRequest processa um request agendado baseado no seu status
+func (m *Machine) processScheduledRequest(request *models.TakedownRequest) {
+	switch request.Status {
+	case models.StatusSubmitted:
+		m.promoteToFollowUp(request)
+	case models.StatusFollowUp:
+		m.handleScheduledFollowUp(request)
+	}
+}
+
+// promoteToFollowUp promove um request submetido para follow-up
+func (m *Machine) promoteToFollowUp(request *models.TakedownRequest) {
+	if err := m.transitionTo(request, models.StatusFollowUp); err != nil {
+		request.AddEvent("transition_failed", "system", "",
+			fmt.Sprintf("failed to transition: %v", err))
+	}
+}
+
+// handleScheduledFollowUp processa um follow-up agendado
+func (m *Machine) handleScheduledFollowUp(request *models.TakedownRequest) {
+	if m.shouldEscalate(request) {
+		m.escalateRequest(request)
+	} else {
+		m.continueFollowUp(request)
+	}
+}
+
+// shouldEscalate verifica se um request deve ser escalado
+func (m *Machine) shouldEscalate(request *models.TakedownRequest) bool {
+	return request.GetAge() > float64(request.SLA.EscalateAfterHours)
+}
+
+// escalateRequest escala um request que está atrasado
+func (m *Machine) escalateRequest(request *models.TakedownRequest) {
+	overdueHours := request.GetAge() - float64(request.SLA.EscalateAfterHours)
+	request.AddEvent("escalation_needed", "system", "",
+		fmt.Sprintf("Case overdue by %.1f hours", overdueHours))
+}
+
+// continueFollowUp continua o follow-up de um request
+func (m *Machine) continueFollowUp(request *models.TakedownRequest) {
+	if err := m.transitionTo(request, models.StatusFollowUp); err != nil {
+		request.AddEvent("transition_failed", "system", "",
+			fmt.Sprintf("failed to transition: %v", err))
 	}
 }
 

@@ -174,30 +174,81 @@ func (c *Client) extractEntityName(entity Entity) string {
 
 // extractAbuseEmail extrai email de abuse do vCard
 func (c *Client) extractAbuseEmail(entity Entity) string {
-	if len(entity.VCardArray) < 2 {
+	vcardArray := c.getVCardArray(entity)
+	if vcardArray == nil {
 		return ""
+	}
+
+	for _, item := range vcardArray {
+		if email := c.extractEmailFromItem(item); email != "" {
+			return email
+		}
+	}
+
+	return ""
+}
+
+// getVCardArray extrai e valida o array vCard da entidade
+func (c *Client) getVCardArray(entity Entity) []interface{} {
+	if len(entity.VCardArray) < 2 {
+		return nil
 	}
 
 	vcard := entity.VCardArray[1]
 	vcardArray, ok := vcard.([]interface{})
 	if !ok {
+		return nil
+	}
+
+	return vcardArray
+}
+
+// extractEmailFromItem extrai email de abuse de um item vCard
+func (c *Client) extractEmailFromItem(item interface{}) string {
+	itemArray := c.validateVCardItem(item)
+	if itemArray == nil {
 		return ""
 	}
 
-	for _, item := range vcardArray {
-		if itemArray, ok := item.([]interface{}); ok && len(itemArray) >= 4 {
-			if prop, ok := itemArray[0].(string); ok && prop == "email" {
-				if email, ok := itemArray[3].(string); ok {
-					// Verificar se é email de abuse
-					if strings.Contains(strings.ToLower(email), "abuse") {
-						return email
-					}
-				}
-			}
-		}
+	if !c.isEmailProperty(itemArray) {
+		return ""
+	}
+
+	email := c.getEmailValue(itemArray)
+	if c.isAbuseEmail(email) {
+		return email
 	}
 
 	return ""
+}
+
+// validateVCardItem valida se um item vCard tem o formato esperado
+func (c *Client) validateVCardItem(item interface{}) []interface{} {
+	itemArray, ok := item.([]interface{})
+	if !ok || len(itemArray) < 4 {
+		return nil
+	}
+	return itemArray
+}
+
+// isEmailProperty verifica se o item é uma propriedade de email
+func (c *Client) isEmailProperty(itemArray []interface{}) bool {
+	prop, ok := itemArray[0].(string)
+	return ok && prop == "email"
+}
+
+// getEmailValue extrai o valor do email do item vCard
+func (c *Client) getEmailValue(itemArray []interface{}) string {
+	email, ok := itemArray[3].(string)
+	if !ok {
+		return ""
+	}
+	return email
+}
+
+// isAbuseEmail verifica se o email é um email de abuse
+func (c *Client) isAbuseEmail(email string) bool {
+	return email != "" && strings.Contains(strings.ToLower(email), "abuse")
 }
 
 // getRDAPURL determina a URL do servidor RDAP baseado no TLD

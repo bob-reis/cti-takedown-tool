@@ -38,42 +38,10 @@ func (e *Engine) loadDefaultRules() {
 		{
 			Match: []string{"phishing"},
 			Actions: []ActionDefinition{
-				{
-					Target: models.TakedownTarget{Type: "registrar"},
-					Action: models.ActionSuspendDomain,
-					SLA: models.SLA{
-						FirstResponseHours: 48,
-						EscalateAfterHours: 120,
-						RetryIntervalHours: 48,
-					},
-				},
-				{
-					Target: models.TakedownTarget{Type: "hosting"},
-					Action: models.ActionRemoveContent,
-					SLA: models.SLA{
-						FirstResponseHours: 48,
-						EscalateAfterHours: 96,
-						RetryIntervalHours: 24,
-					},
-				},
-				{
-					Target: models.TakedownTarget{Type: "search"},
-					Action: models.ActionWarningList,
-					SLA: models.SLA{
-						FirstResponseHours: 24,
-						EscalateAfterHours: 72,
-						RetryIntervalHours: 24,
-					},
-				},
-				{
-					Target: models.TakedownTarget{Type: "blocklist"},
-					Action: models.ActionBlocklist,
-					SLA: models.SLA{
-						FirstResponseHours: 24,
-						EscalateAfterHours: 72,
-						RetryIntervalHours: 24,
-					},
-				},
+				createActionDefinition("registrar", models.ActionSuspendDomain, getSLAForRegistrarPhishing()),
+				createActionDefinition("hosting", models.ActionRemoveContent, getSLAForHostingStandard()),
+				createActionDefinition("search", models.ActionWarningList, getSLAForSearchAndBlocklist()),
+				createActionDefinition("blocklist", models.ActionBlocklist, getSLAForSearchAndBlocklist()),
 			},
 		},
 
@@ -81,24 +49,8 @@ func (e *Engine) loadDefaultRules() {
 		{
 			Match: []string{"malware"},
 			Actions: []ActionDefinition{
-				{
-					Target: models.TakedownTarget{Type: "hosting"},
-					Action: models.ActionRemoveContent,
-					SLA: models.SLA{
-						FirstResponseHours: 24,
-						EscalateAfterHours: 72,
-						RetryIntervalHours: 24,
-					},
-				},
-				{
-					Target: models.TakedownTarget{Type: "blocklist"},
-					Action: models.ActionBlocklist,
-					SLA: models.SLA{
-						FirstResponseHours: 24,
-						EscalateAfterHours: 72,
-						RetryIntervalHours: 24,
-					},
-				},
+				createActionDefinition("hosting", models.ActionRemoveContent, getSLAForSearchAndBlocklist()),
+				createActionDefinition("blocklist", models.ActionBlocklist, getSLAForSearchAndBlocklist()),
 			},
 		},
 
@@ -106,24 +58,8 @@ func (e *Engine) loadDefaultRules() {
 		{
 			Match: []string{"c2"},
 			Actions: []ActionDefinition{
-				{
-					Target: models.TakedownTarget{Type: "hosting"},
-					Action: models.ActionRemoveContent,
-					SLA: models.SLA{
-						FirstResponseHours: 12,
-						EscalateAfterHours: 48,
-						RetryIntervalHours: 12,
-					},
-				},
-				{
-					Target: models.TakedownTarget{Type: "registrar"},
-					Action: models.ActionSuspendDomain,
-					SLA: models.SLA{
-						FirstResponseHours: 24,
-						EscalateAfterHours: 72,
-						RetryIntervalHours: 24,
-					},
-				},
+				createActionDefinition("hosting", models.ActionRemoveContent, getSLAForC2Hosting()),
+				createActionDefinition("registrar", models.ActionSuspendDomain, getSLAForSearchAndBlocklist()),
 			},
 		},
 
@@ -131,17 +67,63 @@ func (e *Engine) loadDefaultRules() {
 		{
 			Match: []string{"brand:*"},
 			Actions: []ActionDefinition{
-				{
-					Target: models.TakedownTarget{Type: "registrar"},
-					Action: models.ActionSuspendDomain,
-					SLA: models.SLA{
-						FirstResponseHours: 72,
-						EscalateAfterHours: 168, // 7 dias
-						RetryIntervalHours: 72,
-					},
-				},
+				createActionDefinition("registrar", models.ActionSuspendDomain, getSLAForBrand()),
 			},
 		},
+	}
+}
+
+// createActionDefinition cria uma definição de ação
+func createActionDefinition(targetType string, action models.TakedownAction, sla models.SLA) ActionDefinition {
+	return ActionDefinition{
+		Target: models.TakedownTarget{Type: targetType},
+		Action: action,
+		SLA:    sla,
+	}
+}
+
+// getSLAForRegistrarPhishing retorna SLA específico para registrar em casos de phishing
+func getSLAForRegistrarPhishing() models.SLA {
+	return models.SLA{
+		FirstResponseHours: 48,
+		EscalateAfterHours: 120,
+		RetryIntervalHours: 48,
+	}
+}
+
+// getSLAForHostingStandard retorna SLA padrão para hosting
+func getSLAForHostingStandard() models.SLA {
+	return models.SLA{
+		FirstResponseHours: 48,
+		EscalateAfterHours: 96,
+		RetryIntervalHours: 24,
+	}
+}
+
+// getSLAForSearchAndBlocklist retorna SLA para search engines e blocklists
+func getSLAForSearchAndBlocklist() models.SLA {
+	return models.SLA{
+		FirstResponseHours: 24,
+		EscalateAfterHours: 72,
+		RetryIntervalHours: 24,
+	}
+}
+
+// getSLAForC2Hosting retorna SLA para hosting em casos de C2 (mais urgente)
+func getSLAForC2Hosting() models.SLA {
+	return models.SLA{
+		FirstResponseHours: 12,
+		EscalateAfterHours: 48,
+		RetryIntervalHours: 12,
+	}
+}
+
+// getSLAForBrand retorna SLA para casos de marca/typosquatting
+func getSLAForBrand() models.SLA {
+	return models.SLA{
+		FirstResponseHours: 72,
+		EscalateAfterHours: 168, // 7 dias
+		RetryIntervalHours: 72,
 	}
 }
 
