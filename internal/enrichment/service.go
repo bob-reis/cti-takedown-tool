@@ -149,4 +149,3 @@ func (s *Service) lookupASN(ip string) (int, string, error) {
 		return 777777, "Unknown Provider", nil
 	}
 }
-

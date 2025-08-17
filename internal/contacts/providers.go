@@ -6,6 +6,16 @@ import (
 	"github.com/cti-team/takedown/pkg/models"
 )
 
+// Constantes para emails de abuse centralizados
+const (
+	CloudflareAbuseEmail = "abuse@cloudflare.com"
+	AmazonAbuseEmail     = "abuse@amazonaws.com"
+	FastlyAbuseEmail     = "abuse@fastly.com"
+	AkamaiAbuseEmail     = "abuse@akamai.com"
+	GoogleAbuseEmail     = "network-abuse@google.com"
+	MicrosoftAbuseEmail  = "abuse@microsoft.com"
+)
+
 // GetCDNProviders retorna mapa de provedores CDN conhecidos
 func GetCDNProviders() map[string]*models.CDNInfo {
 	return map[string]*models.CDNInfo{
@@ -13,25 +23,25 @@ func GetCDNProviders() map[string]*models.CDNInfo {
 			Name:    "Cloudflare",
 			Webform: "https://www.cloudflare.com/abuse/form",
 			Abuse: models.ContactInfo{
-				Email: "abuse@cloudflare.com",
+				Email: CloudflareAbuseEmail,
 			},
 		},
 		"fastly": {
 			Name: "Fastly",
 			Abuse: models.ContactInfo{
-				Email: "abuse@fastly.com",
+				Email: FastlyAbuseEmail,
 			},
 		},
 		"akamai": {
 			Name: "Akamai",
 			Abuse: models.ContactInfo{
-				Email: "abuse@akamai.com",
+				Email: AkamaiAbuseEmail,
 			},
 		},
 		"amazon": {
 			Name: "Amazon CloudFront",
 			Abuse: models.ContactInfo{
-				Email: "abuse@amazonaws.com",
+				Email: AmazonAbuseEmail,
 			},
 		},
 	}
@@ -40,10 +50,10 @@ func GetCDNProviders() map[string]*models.CDNInfo {
 // GetASNAbuseEmailMap retorna mapa de emails de abuse para ASNs conhecidos
 func GetASNAbuseEmailMap() map[string]string {
 	return map[string]string{
-		"google llc":            "network-abuse@google.com",
-		"cloudflare, inc.":      "abuse@cloudflare.com",
-		"amazon.com, inc.":      "abuse@amazonaws.com",
-		"microsoft corporation": "abuse@microsoft.com",
+		"google llc":            GoogleAbuseEmail,
+		"cloudflare, inc.":      CloudflareAbuseEmail,
+		"amazon.com, inc.":      AmazonAbuseEmail,
+		"microsoft corporation": MicrosoftAbuseEmail,
 		"digitalocean":          "abuse@digitalocean.com",
 		"ovh":                   "abuse@ovh.net",
 		"hetzner":               "abuse@hetzner.de",
