@@ -8,4 +8,4 @@ Welcome to the project documentation. Use the sections below to learn more about
 - [Deployment](deployment/README.md)
 - [Development Guide](development/README.md)
 - [Troubleshooting](troubleshooting/README.md)
-- [Portuguese version](../docs_pt-BR/README.md)
+
